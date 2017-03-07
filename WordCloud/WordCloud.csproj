@@ -7,8 +7,8 @@
     <ProjectGuid>{53F21863-BACB-463C-9A36-0C3A5B7105CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WordCloud</RootNamespace>
-    <AssemblyName>WordCloud</AssemblyName>
+    <RootNamespace>WordCloudSharp</RootNamespace>
+    <AssemblyName>WordCloudSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -44,7 +44,7 @@
     <Compile Include="IntegralImage.cs" />
     <Compile Include="OccupancyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WordCloud.cs" />
+    <Compile Include="WordCloudSharp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

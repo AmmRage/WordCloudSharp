@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
-namespace WordCloud
+namespace WordCloudSharp
 {
 	internal class OccupancyMap : IntegralImage
 	{
@@ -10,7 +11,13 @@ namespace WordCloud
 		    this.Rand = new Random();
 		}
 
-		public bool TryFindUnoccupiedPosition(int strSizeX, int strSizeY, out int oPosX, out int oPosY)
+		public OccupancyMap(Image mask) : base(new FastImage(mask))
+		{
+            this.Rand = new Random();
+        }
+
+
+        public bool TryFindUnoccupiedPosition(int strSizeX, int strSizeY, out int oPosX, out int oPosY)
 		{
 			oPosX = -1;
 			oPosY = -1;

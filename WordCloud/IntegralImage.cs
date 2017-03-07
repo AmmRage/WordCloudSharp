@@ -1,6 +1,7 @@
 ﻿using System;
-
-namespace WordCloud
+using System.Diagnostics;
+using System.Linq;
+namespace WordCloudSharp
 {
 	internal class IntegralImage
 	{
@@ -11,29 +12,60 @@ namespace WordCloud
 		    this.OutputImgHeight = outputImgHeight;
 		}
 
-		public void Update(FastImage image)
-		{
-			Update(image, 1, 1);
-		}
+        public IntegralImage(FastImage image)
+        {
+            this.Integral = new uint[image.Width, image.Height];
+            this.OutputImgWidth = image.Width;
+            this.OutputImgHeight = image.Height;
+            InitUpdate(image, 0, 0);
+        }
 
-		public void Update(FastImage image, int posX, int posY)
+        public void InitUpdate(FastImage image, int posX, int posY)
+        {
+            if (posX < 1) posX = 1;
+            if (posY < 1) posY = 1;
+            var pixelSize = Math.Min(3, image.PixelFormatSize);
+            for (var i = posY; i < image.Height; ++i)
+            {
+                for (var j = posX; j < image.Width; ++j)
+                {
+                    byte pixel = 0;
+                    for (var p = 0; p < pixelSize; ++p)
+                    {
+                        pixel |= image.Data[i * image.Stride + j * image.PixelFormatSize + p];
+                    }
+                    if (pixel != 0) pixel = 1;
+                    this.Integral[j, i] = pixel + this.Integral[j - 1, i] + this.Integral[j, i - 1] - this.Integral[j - 1, i - 1];
+                }
+            }
+#if DEBUG
+
+            //var oResult = new uint[this.OutputImgWidth * this.OutputImgHeight];
+            //Buffer.BlockCopy(Integral, 0, oResult, 0, Integral.Length * 4);
+            //foreach (var g in oResult.GroupBy(n => n))
+            //{
+            //    Debug.WriteLine(g.Key + ", " + g.Count());
+            //}
+#endif
+        }
+        public void Update(FastImage image, int posX, int posY)
 		{
 			if (posX < 1) posX = 1;
 			if (posY < 1) posY = 1;
-
+		    var pixelSize = Math.Min(3, image.PixelFormatSize);
 			for (var i = posY; i < image.Height; ++i)
 			{
 				for (var j = posX; j < image.Width; ++j)
 				{
 					byte pixel = 0;
-					for (var p = 0; p < image.PixelFormatSize; ++p)
+					for (var p = 0; p < pixelSize; ++p)
 					{
-						pixel |= image.Data[i*image.Stride + j*image.PixelFormatSize + p];
+						pixel |= image.Data[i * image.Stride + j * image.PixelFormatSize + p];
 					}
 				    this.Integral[j, i] = pixel + this.Integral[j - 1, i] + this.Integral[j, i - 1] - this.Integral[j - 1, i - 1];
 				}
 			}
-		}
+        }
 
 		public ulong GetArea(int xPos, int yPos, int sizeX, int sizeY)
 		{

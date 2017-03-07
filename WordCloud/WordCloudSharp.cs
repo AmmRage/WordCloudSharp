@@ -4,13 +4,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 
-namespace WordCloud
+namespace WordCloudSharp
 {
 	/// <summary>
 	/// Class to draw word clouds.
 	/// </summary>
 	public class WordCloud
-	{
+    {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WordCloud"/> class.
 		/// </summary>
@@ -21,12 +21,20 @@ namespace WordCloud
 		/// <param name="maxFontSize">Maximum size of the font.</param>
 		/// <param name="fontStep">The font step to use.</param>
 		public WordCloud(int width, int height, bool useRank = false, Color? fontColor = null, int maxFontSize = -1,
-			int fontStep = 1)
+			int fontStep = 1, Image mask = null)
 		{
-		    this.Map = new OccupancyMap(width, height);
-		    this.Image = new FastImage(width, height, PixelFormat.Format32bppArgb);
+		    if (mask == null)
+		    {
+		        this.Map = new OccupancyMap(width, height);
+		    }
+		    else
+		    {
+		        this.Map = new OccupancyMap(mask);
+            }
 
-		    this.MaxFontSize = maxFontSize < 0 ? height : maxFontSize;
+            this.Image = new FastImage(width, height, PixelFormat.Format32bppArgb);
+
+            this.MaxFontSize = maxFontSize < 0 ? height : maxFontSize;
 		    this.FontStep = fontStep;
 		    this._mFontColor = fontColor;
 		    this.UseRank = useRank;
@@ -94,10 +102,10 @@ namespace WordCloud
 		}
 
 
-		/// <summary>
-		/// Gets font colour or random if font wasn't set
-		/// </summary>
-		private Color FontColor
+        /// <summary>
+        /// Gets font colour or random if font wasn't set
+        /// </summary>
+        private Color FontColor
 		{
 			get { return this._mFontColor ?? GetRandomColor(); }
 			set { this._mFontColor = value; }
