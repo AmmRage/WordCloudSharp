@@ -22,7 +22,7 @@ namespace WordCloudTestApp
         public FormMain()
 		{
 			InitializeComponent();
-			var lines = File.ReadLines("../../content/counts.csv").Take(50).ToArray();
+            var lines = File.ReadLines("../../content/counts.csv").ToArray().Take(50);
 		    this.Words = new List<string>(lines.Count());
 		    this.Frequencies = new List<int>(lines.Count());
 			foreach (var line in lines)
@@ -49,13 +49,13 @@ namespace WordCloudTestApp
 
             var checkBoxStepDraw = new CheckBox();
             checkBoxStepDraw.AutoSize = true;
-            checkBoxStepDraw.Location = new System.Drawing.Point(426, 9);
+            checkBoxStepDraw.Location = new Point(400, 9);
             checkBoxStepDraw.Name = "checkBoxStepDraw";
-            checkBoxStepDraw.Size = new System.Drawing.Size(73, 17);
+            checkBoxStepDraw.Size = new Size(73, 17);
             checkBoxStepDraw.TabIndex = 1;
             checkBoxStepDraw.Text = "StepDraw";
             checkBoxStepDraw.UseVisualStyleBackColor = true;
-            checkBoxStepDraw.CheckedChanged += new System.EventHandler(checkBoxStepDraw_CheckedChanged);
+            checkBoxStepDraw.CheckedChanged += new EventHandler(checkBoxStepDraw_CheckedChanged);
             checkBoxStepDraw.Visible = true;
             checkBoxStepDraw.Enabled = true;
             checkBoxStepDraw.Anchor = AnchorStyles.Right | AnchorStyles.Top;
@@ -67,22 +67,18 @@ namespace WordCloudTestApp
 
         private void DrawWordcloud(int width, int height, Image mask )
         {
-            var s = new Stopwatch();
-            s.Start();
-
             this.wc = new WordCloud(width, height, mask: mask)
             {
                  StepDrawMode = (this.Controls["checkBoxStepDraw"] as CheckBox).Checked,
             };
 	        this.wc.OnProgress += Wc_OnProgress;
 #if DEBUG
-	        this.wc.OnStepDraw += ShowImage;
+	        this.wc.OnStepDrawResultImg += ShowResultImage;
+            this.wc.OnStepDrawIntegralImg += ShowIntegralImage;
 #endif
             var i = this.wc.Draw(this.Words, this.Frequencies);
             Wc_OnProgress(1);
-            s.Stop();
-            ShowElapsedTime(s.Elapsed.TotalMilliseconds);
-            ShowImage(i);
+            ShowResultImage(i);
         }
 
         private void buttonDraw_Click(object sender, EventArgs e)
@@ -100,7 +96,7 @@ namespace WordCloudTestApp
             Task.Factory.StartNew(() =>
             {
                 ControlsEnable(false);
-                using (var img = Image.FromFile("../../content/triangle_mask.png"))
+                using (var img = Image.FromFile("../../content/stormtrooper_mask.png"))
                 {
                     DrawWordcloud(img.Width, img.Height, img);
                 }
@@ -127,20 +123,20 @@ namespace WordCloudTestApp
                 this.panelControls.Enabled = enable;
 	    }
 
-	    private void ShowElapsedTime(double elapsed)
-	    {
-            if (this.elapsedLabel.InvokeRequired)
-                this.elapsedLabel.Invoke(new Action<string>((t) => this.elapsedLabel.Text = t), elapsed.ToString());
-            else
-                this.elapsedLabel.Text = elapsed.ToString();
-        }
-
-	    private void ShowImage(Image img)
-	    {
+        private void ShowResultImage(Image img)
+        {
             if (this.resultPictureBox.InvokeRequired)
                 this.resultPictureBox.Invoke(new Action<Image>((i) => this.resultPictureBox.Image = i), img);
             else
                 this.resultPictureBox.Image = img;
+        }
+
+        private void ShowIntegralImage(Image img)
+        {
+            if (this.pictureBoxIntegralImg.InvokeRequired)
+                this.pictureBoxIntegralImg.Invoke(new Action<Image>((i) => this.pictureBoxIntegralImg.Image = i), img);
+            else
+                this.pictureBoxIntegralImg.Image = img;
         }
 
         private void buttonContinueDraw_Click(object sender, EventArgs e)

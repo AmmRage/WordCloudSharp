@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCloud", "WordCloud\WordCloud.csproj", "{53F21863-BACB-463C-9A36-0C3A5B7105CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCloudSharp", "WordCloud\WordCloudSharp.csproj", "{53F21863-BACB-463C-9A36-0C3A5B7105CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCloudTestApp", "WordCloudTestApp\WordCloudTestApp.csproj", "{C895CD32-4731-454E-BBEA-652A8AD0ECFC}"
 EndProject

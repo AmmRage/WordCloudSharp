@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace WordCloudSharp
@@ -15,7 +16,9 @@ namespace WordCloudSharp
 	{
         public event Action<double> OnProgress;
 #if DEBUG
-        public event Action<Bitmap> OnStepDraw;
+        public event Action<Image> OnStepDrawResultImg;
+
+        public event Action<Image> OnStepDrawIntegralImg;
 
 	    private AutoResetEvent DrawWaitHandle;
 
@@ -71,38 +74,36 @@ namespace WordCloudSharp
         private int FontStep { get; set; }
 
         #endregion
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WordCloud"/> class.
-        /// </summary>
-        /// <param name="width">The width of word cloud.</param>
-        /// <param name="height">The height of word cloud.</param>
-        /// <param name="useRank">if set to <c>true</c> will ignore frequencies for best fit.</param>
-        /// <param name="fontColor">Color of the font.</param>
-        /// <param name="maxFontSize">Maximum size of the font.</param>
-        /// <param name="fontStep">The font step to use.</param>
-        public WordCloud(int width, int height, bool useRank = false, Color? fontColor = null, float maxFontSize = -1,
+
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="WordCloud"/> class.
+	    /// </summary>
+	    /// <param name="width">The width of word cloud.</param>
+	    /// <param name="height">The height of word cloud.</param>
+	    /// <param name="useRank">if set to <c>true</c> will ignore frequencies for best fit.</param>
+	    /// <param name="fontColor">Color of the font.</param>
+	    /// <param name="maxFontSize">Maximum size of the font.</param>
+	    /// <param name="fontStep">The font step to use.</param>
+	    /// <param name="mask">mask image</param>
+	    public WordCloud(int width, int height, bool useRank = false, Color? fontColor = null, float maxFontSize = -1,
 			int fontStep = 1, Image mask = null)
 		{
-		    if (mask == null)
-		    {
-		        this.Map = new OccupancyMap(width, height);
-		    }
-		    else
-		    {
-		        this.Map = new OccupancyMap(mask);
-            }
-
-            if (mask == null)
-                this.WorkImage = new FastImage(width, height, PixelFormat.Format32bppArgb);
-            else
+	        if (mask == null)
+	        {
+	            this.Map = new OccupancyMap(width, height);
+	            this.WorkImage = new FastImage(width, height, PixelFormat.Format32bppArgb);
+	        }
+	        else
+	        {
+	            this.Map = new OccupancyMap(mask);
                 this.WorkImage = new FastImage(mask);
+            }
 
             this.MaxFontSize = maxFontSize < 0 ? (float)height : maxFontSize;
 		    this.FontStep = fontStep;
 		    this._mFontColor = fontColor;
 		    this.UseRank = useRank;
-		    this.Random = new Random();
+		    this.Random = new Random(Environment.TickCount);
 
 #if DEBUG
             this.DrawWaitHandle = new AutoResetEvent(false);
@@ -132,8 +133,10 @@ namespace WordCloudSharp
 		/// </exception>
 		public Image Draw(List<string> words, List<int> freqs)
 		{
-		    this.DrawWaitHandle.Reset();
-
+#if DEBUG
+            ShowIntegralImgStepDraw(this.Map.IntegralImageToBitmap());
+#endif
+            this.DrawWaitHandle.Reset();
             var fontSize = this.MaxFontSize;
 			if (words == null || freqs == null)
 			{
@@ -146,11 +149,9 @@ namespace WordCloudSharp
 
 			using (var g = Graphics.FromImage(this.WorkImage.Bitmap))
 			{
-				g.Clear(Color.Transparent);
+				//g.Clear(Color.Transparent); !!
 				g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
 			    var lastProgress = 0.0d;
-
 				for (var i = 0; i < words.Count; ++i)
 				{
 				    var progress = (double) i/words.Count;
@@ -159,47 +160,42 @@ namespace WordCloudSharp
 				        ShowProgress(progress);
 				    }
 				    lastProgress = progress;
-
                     if (!this.UseRank)
 					{
 						fontSize =  (float) Math.Min(fontSize, 100*Math.Log10(freqs[i] + 100));
 					}
-					var format = StringFormat.GenericDefault;
-					format.FormatFlags &= ~StringFormatFlags.LineLimit;
-
+					var format = StringFormat.GenericTypographic;
+                    format.FormatFlags &= ~StringFormatFlags.LineLimit;
+                    
                     Point p;
                     var foundPosition = false;
 					Font font;
-
 				    var size = new SizeF();
 					do
 					{
 						font = new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel);
 						size = g.MeasureString(words[i], font, new PointF(0, 0), format);
-						foundPosition = this.Map.TryFindRandomUnoccupiedPosition((int) size.Width, (int) size.Height, out p);
-						//foundPosition = this.Map.GetRandomUnoccupiedPosition((int) size.Width, (int) size.Height, out p);
-						if (!foundPosition)
-                            fontSize -= this.FontStep;
-					}while (fontSize > 0 && !foundPosition);
+						foundPosition = this.Map.GetRandomUnoccupiedPosition((int) size.Width, (int) size.Height, out p);
+						if (!foundPosition) fontSize -= this.FontStep;
+					} while (fontSize > 0 && !foundPosition);
 
-					if (fontSize <= 0)
-                        break;
+					if (fontSize <= 0) break;
 					g.DrawString(words[i], font, new SolidBrush(this.FontColor), p.X, p.Y, format);
-                    //g.DrawRectangle(pen, p.X, p.Y, size.Width, size.Height);
 				    this.Map.Update(this.WorkImage, p.X, p.Y);
 #if DEBUG
 				    if (this.StepDrawMode)
 				    {
-				        //ShowStepDraw(this.WorkImage.Bitmap.Clone() as Bitmap);
-				        ShowStepDraw(this.Map.IntegralImageToBitmap());
-				        this.DrawWaitHandle.WaitOne();
+                        ShowResultStepDraw(new Bitmap(this.WorkImage.Bitmap));
+                        ShowIntegralImgStepDraw(this.Map.IntegralImageToBitmap());
+                        this.DrawWaitHandle.WaitOne();
 				    }
 #endif
 				}
 			}
-		    var result = this.WorkImage.Bitmap.Clone();
-		    this.WorkImage.Dispose();
-		    return (Image) result;
+            var result = new Bitmap(ReviseBackground(this.WorkImage.Bitmap));
+            //var result = new Bitmap(this.WorkImage.Bitmap);
+            this.WorkImage.Dispose();
+            return result;
 		}
 
 	    private void ShowProgress(double progress)
@@ -207,13 +203,51 @@ namespace WordCloudSharp
 	        OnProgress?.Invoke(progress);
 	    }
 
-#if DEBUG
-        private void ShowStepDraw(Bitmap bmp)
+        private Bitmap ReviseBackground(Bitmap bmp)
         {
-            OnStepDraw?.Invoke(bmp);
+            var bmpdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+            var len = bmpdata.Stride * bmp.Height;
+            var buffer = new byte[len];
+            var pixelformatsize = bmpdata.Stride / bmp.Width;
+            var pixelSize = Math.Min(3, pixelformatsize);
+            Marshal.Copy(bmpdata.Scan0, buffer, 0, buffer.Length);
+
+            for (var i = 0; i < bmp.Width * bmp.Height * pixelformatsize; i += pixelformatsize)
+            {
+                var zeroValue = false;
+                for (var j = 0; j < pixelSize; j++)
+                {
+                    if (buffer[i + j] != 0)
+                    {
+                        zeroValue = true;
+                    }
+                }
+                if (!zeroValue)
+                {
+                    for (var j = 0; j < pixelSize; j++)
+                    {
+                        buffer[i + j] = 255;
+                    }
+                }
+            }
+            Marshal.Copy(buffer, 0, bmpdata.Scan0, buffer.Length);
+
+            bmp.UnlockBits(bmpdata);
+            return bmp;
         }
 
-	    public void ContinueDrawing()
+#if DEBUG
+        private void ShowResultStepDraw(Bitmap bmp)
+        {
+            OnStepDrawResultImg?.Invoke(bmp);
+        }
+
+        private void ShowIntegralImgStepDraw(Bitmap bmp)
+        {
+            OnStepDrawIntegralImg?.Invoke(bmp);
+        }
+
+        public void ContinueDrawing()
 	    {
             this.DrawWaitHandle.Set();
 	    }

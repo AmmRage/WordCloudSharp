@@ -9,9 +9,9 @@ namespace WordCloudSharp
     /// Image class for fast manipulation of bitmap data.
     /// </summary>
 #if DEBUG
-        public
+    public
 #else
-        internal
+    internal
 #endif
     class FastImage : IDisposable
 	{
@@ -26,30 +26,19 @@ namespace WordCloudSharp
 		    this.Bitmap = new Bitmap(width, height, this.Stride, format, pData);
 		}
 
-
-        public FastImage(Image img)
+        public FastImage(Image img) : this(img.Width, img.Height, img.PixelFormat)
         {
-            this.PixelFormatSize = Image.GetPixelFormatSize(img.PixelFormat) / 8; 
-            this.Stride = img.Width * this.PixelFormatSize;
-
-            this.Bitmap = new Bitmap(img);
-
-            var len = this.Stride * this.Bitmap.Height;
-            this.Data = new byte[len];
-
-            var bmpdata = this.Bitmap.LockBits(new Rectangle(0, 0, this.Bitmap.Width, this.Bitmap.Height),
-                ImageLockMode.ReadOnly, this.Bitmap.PixelFormat);
-            Marshal.Copy(bmpdata.Scan0, this.Data, 0, this.Data.Length);
-            this.Bitmap.UnlockBits(bmpdata);
-            this.Handle = GCHandle.Alloc(this.Data, GCHandleType.Pinned);
+            var bmp = new Bitmap(img);
+            var bmpdatain = bmp.LockBits(new Rectangle(0, 0, this.Bitmap.Width, this.Bitmap.Height), ImageLockMode.ReadOnly, this.Bitmap.PixelFormat);
+            Marshal.Copy(bmpdatain.Scan0, this.Data, 0, this.Data.Length);
+            bmp.UnlockBits(bmpdatain);
         }
 
+        public int Width => this.Bitmap.Width;
 
-        public int Width { get { return this.Bitmap.Width; } }
+        public int Height => this.Bitmap.Height;
 
-		public int Height { get { return this.Bitmap.Height; } }
-
-		public int PixelFormatSize { get; set; }
+        public int PixelFormatSize { get; set; }
 
 		public GCHandle Handle { get; set; }
 
