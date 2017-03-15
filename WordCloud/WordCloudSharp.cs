@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -24,7 +25,6 @@ namespace WordCloudSharp
 
 	    public bool StepDrawMode { get; set; }
 #endif
-
         #region attributes
         /// <summary>
         /// Gets font colour or random if font wasn't set
@@ -73,7 +73,28 @@ namespace WordCloudSharp
         /// </summary>
         private int FontStep { get; set; }
 
-        #endregion
+        /// <summary>
+        /// If allow vertical drawing 
+        /// </summary>
+	    private bool AllowVertical { get; set; }
+
+        private string Fontname
+        {
+            get { return this._fontname ?? "Microsoft Sans Serif"; }
+            set
+            {
+                this._fontname = value;
+                if (value == null) return;
+                using (var f = new Font(value, 12,  FontStyle.Regular))
+                {
+                    this._fontname = f.FontFamily.Name;
+                }
+            }
+        }
+
+	    private string _fontname;
+
+	    #endregion
 
 	    /// <summary>
 	    /// Initializes a new instance of the <see cref="WordCloud"/> class.
@@ -85,8 +106,8 @@ namespace WordCloudSharp
 	    /// <param name="maxFontSize">Maximum size of the font.</param>
 	    /// <param name="fontStep">The font step to use.</param>
 	    /// <param name="mask">mask image</param>
-	    public WordCloud(int width, int height, bool useRank = false, Color? fontColor = null, float maxFontSize = -1,
-			int fontStep = 1, Image mask = null)
+	    /// <param name="allowVerical">allow vertical text</param>
+	    public WordCloud(int width, int height, bool useRank = false, Color? fontColor = null, float maxFontSize = -1, int fontStep = 1, Image mask = null, bool allowVerical = false, string fontname = null)
 		{
 	        if (mask == null)
 	        {
@@ -95,7 +116,10 @@ namespace WordCloudSharp
 	        }
 	        else
 	        {
-	            this.Map = new OccupancyMap(mask);
+	            mask = Util.ResizeImage(mask, width, height);
+                if (!Util.CheckMaskValid(mask))
+	                throw new Exception("Mask is not a valid black-white image");
+                this.Map = new OccupancyMap(mask);
                 this.WorkImage = new FastImage(mask);
             }
 
@@ -104,7 +128,8 @@ namespace WordCloudSharp
 		    this._mFontColor = fontColor;
 		    this.UseRank = useRank;
 		    this.Random = new Random(Environment.TickCount);
-
+	        this.AllowVertical = allowVerical;
+            this.Fontname = fontname;
 #if DEBUG
             this.DrawWaitHandle = new AutoResetEvent(false);
             this.StepDrawMode = false;
@@ -120,23 +145,25 @@ namespace WordCloudSharp
             return Color.FromArgb(this.Random.Next(0, 255), this.Random.Next(0, 255), this.Random.Next(0, 255));
         }
 
-		/// <summary>
-		/// Draws the specified word cloud given list of words and frequecies
-		/// </summary>
-		/// <param name="words">List of words ordered by occurance.</param>
-		/// <param name="freqs">List of frequecies.</param>
-		/// <returns>Image of word cloud.</returns>
-		/// <exception cref="System.ArgumentException">
-		/// Arguments null.
-		/// or
-		/// Must have the same number of words as frequencies.
-		/// </exception>
-		public Image Draw(List<string> words, List<int> freqs)
+        /// <summary>
+        /// Draws the specified word cloud given list of words and frequecies
+        /// </summary>
+        /// <param name="words">List of words ordered by occurance.</param>
+        /// <param name="freqs">List of frequecies.</param>
+        /// <param name="bgcolor">Backgroud color of the output image</param>
+        /// <param name="img">Backgroud image of the output image</param>
+        /// <returns>Image of word cloud.</returns>
+        /// <exception cref="System.ArgumentException">
+        /// Arguments null.
+        /// or
+        /// Must have the same number of words as frequencies.
+        /// </exception>
+        private Image Draw(IList<string> words, IList<int> freqs, Color bgcolor, Image img)
 		{
 #if DEBUG
             ShowIntegralImgStepDraw(this.Map.IntegralImageToBitmap());
-#endif
             this.DrawWaitHandle.Reset();
+#endif
             var fontSize = this.MaxFontSize;
 			if (words == null || freqs == null)
 			{
@@ -147,10 +174,23 @@ namespace WordCloudSharp
 				throw new ArgumentException("Must have the same number of words as frequencies.");
 			}
 
-			using (var g = Graphics.FromImage(this.WorkImage.Bitmap))
-			{
-				//g.Clear(Color.Transparent); !!
-				g.TextRenderingHint = TextRenderingHint.AntiAlias;
+            Bitmap result ;
+            if (img == null)
+                result = new Bitmap(this.WorkImage.Width, this.WorkImage.Height);
+            else
+            {
+                if (img.Size != this.WorkImage.Bitmap.Size)
+                    throw new Exception("The backgroud img should be with the same size with the mask");
+                result = new Bitmap(img);
+            }
+
+            using (var gworking = Graphics.FromImage(this.WorkImage.Bitmap))
+            using (var gresult = Graphics.FromImage(result))
+            {
+                if(img == null)
+                    gresult.Clear(bgcolor);
+                gresult.TextRenderingHint = TextRenderingHint.AntiAlias;
+                gworking.TextRenderingHint = TextRenderingHint.AntiAlias;
 			    var lastProgress = 0.0d;
 				for (var i = 0; i < words.Count; ++i)
 				{
@@ -158,30 +198,38 @@ namespace WordCloudSharp
 				    if (progress - lastProgress > 0.01)
 				    {
 				        ShowProgress(progress);
-				    }
-				    lastProgress = progress;
+                        lastProgress = progress;
+                    }
                     if (!this.UseRank)
 					{
 						fontSize =  (float) Math.Min(fontSize, 100*Math.Log10(freqs[i] + 100));
 					}
-					var format = StringFormat.GenericTypographic;
-                    format.FormatFlags &= ~StringFormatFlags.LineLimit;
-                    
+
+                    var format = new StringFormat();
+				    if (this.AllowVertical)
+				    {
+                        if (this.Random.Next(0, 2) == 1)
+                            format.FormatFlags = StringFormatFlags.DirectionVertical;
+                    }
+
                     Point p;
                     var foundPosition = false;
 					Font font;
 				    var size = new SizeF();
+				    Debug.WriteLine("Word: " + words[i]);
 					do
 					{
-						font = new Font(FontFamily.GenericSansSerif, fontSize, GraphicsUnit.Pixel);
-						size = g.MeasureString(words[i], font, new PointF(0, 0), format);
+						font = new Font(this.Fontname, fontSize, GraphicsUnit.Pixel);
+						size = gworking.MeasureString(words[i], font, new PointF(0, 0), format);
+					    Debug.WriteLine("Search with font size: " + fontSize);
 						foundPosition = this.Map.GetRandomUnoccupiedPosition((int) size.Width, (int) size.Height, out p);
 						if (!foundPosition) fontSize -= this.FontStep;
 					} while (fontSize > 0 && !foundPosition);
-
+				    Debug.WriteLine("Found pos: " + p);
 					if (fontSize <= 0) break;
-					g.DrawString(words[i], font, new SolidBrush(this.FontColor), p.X, p.Y, format);
-				    this.Map.Update(this.WorkImage, p.X, p.Y);
+                    gworking.DrawString(words[i], font, new SolidBrush(this.FontColor), p.X, p.Y, format);
+                    gresult.DrawString(words[i], font, new SolidBrush(this.FontColor), p.X, p.Y, format);
+                    this.Map.Update(this.WorkImage, p.X, p.Y);
 #if DEBUG
 				    if (this.StepDrawMode)
 				    {
@@ -192,57 +240,56 @@ namespace WordCloudSharp
 #endif
 				}
 			}
-            var result = new Bitmap(ReviseBackground(this.WorkImage.Bitmap));
-            //var result = new Bitmap(this.WorkImage.Bitmap);
             this.WorkImage.Dispose();
             return result;
 		}
 
-	    private void ShowProgress(double progress)
+        /// <summary>
+        /// Draws the specified word cloud with background color spicified given list of words and frequecies
+        /// </summary>
+        /// <param name="words">List of words ordered by occurance.</param>
+        /// <param name="freqs">List of frequecies.</param>
+        /// <param name="bgcolor">Specified background color</param>
+        /// <returns>Image of word cloud.</returns>
+        public Image Draw(IList<string> words, IList<int> freqs, Color bgcolor)
+        {
+            return Draw(words, freqs, bgcolor, null);
+        }
+
+        /// <summary>
+        /// Draws the specified word cloud with background spicified given list of words and frequecies
+        /// </summary>
+        /// <param name="words">List of words ordered by occurance.</param>
+        /// <param name="freqs">List of frequecies.</param>
+        /// <param name="img">Specified background image</param>
+        /// <returns>Image of word cloud.</returns>
+        public Image Draw(IList<string> words, IList<int> freqs, Image img)
+        {
+            return Draw(words, freqs, Color.White, img);
+        }
+
+        /// <summary>
+        /// Draws the specified word cloud with given list of words and frequecies
+        /// </summary>
+        /// <param name="words">List of words ordered by occurance.</param>
+        /// <param name="freqs">List of frequecies.</param>
+        /// <returns>Image of word cloud.</returns>
+        public Image Draw(IList<string> words, IList<int> freqs)
+        {
+            return Draw(words, freqs, Color.White, null);
+        }
+
+        private void ShowProgress(double progress)
 	    {
 	        OnProgress?.Invoke(progress);
 	    }
-
-        private Bitmap ReviseBackground(Bitmap bmp)
-        {
-            var bmpdata = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
-            var len = bmpdata.Stride * bmp.Height;
-            var buffer = new byte[len];
-            var pixelformatsize = bmpdata.Stride / bmp.Width;
-            var pixelSize = Math.Min(3, pixelformatsize);
-            Marshal.Copy(bmpdata.Scan0, buffer, 0, buffer.Length);
-
-            for (var i = 0; i < bmp.Width * bmp.Height * pixelformatsize; i += pixelformatsize)
-            {
-                var zeroValue = false;
-                for (var j = 0; j < pixelSize; j++)
-                {
-                    if (buffer[i + j] != 0)
-                    {
-                        zeroValue = true;
-                    }
-                }
-                if (!zeroValue)
-                {
-                    for (var j = 0; j < pixelSize; j++)
-                    {
-                        buffer[i + j] = 255;
-                    }
-                }
-            }
-            Marshal.Copy(buffer, 0, bmpdata.Scan0, buffer.Length);
-
-            bmp.UnlockBits(bmpdata);
-            return bmp;
-        }
-
 #if DEBUG
-        private void ShowResultStepDraw(Bitmap bmp)
+        private void ShowResultStepDraw(Image bmp)
         {
             OnStepDrawResultImg?.Invoke(bmp);
         }
 
-        private void ShowIntegralImgStepDraw(Bitmap bmp)
+        private void ShowIntegralImgStepDraw(Image bmp)
         {
             OnStepDrawIntegralImg?.Invoke(bmp);
         }

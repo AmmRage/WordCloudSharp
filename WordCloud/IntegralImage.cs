@@ -38,7 +38,7 @@ namespace WordCloudSharp
 
         private void InitMask(FastImage image)
         {
-            Update(CropImage(image), 1 ,1);
+            Update(Util.CropImage(image), 1 ,1);
         }
 
         public void Update(FastImage image, int posX, int posY)
@@ -106,20 +106,7 @@ namespace WordCloudSharp
                 IntegralImageToBitmap().Save(filename + DateTime.Now.ToString("_hhmmss_fff")+".bmp");
         }
 
-	    private FastImage CropImage(FastImage img)
-	    {
-            var cropRect = new Rectangle(1, 1, img.Width -1 , img. Height - 1);
-            var src = img.Bitmap;
-            var target = new Bitmap(cropRect.Width, cropRect.Height);
 
-            using (var g = Graphics.FromImage(target))
-            {
-                g.DrawImage(src, new Rectangle(0, 0, target.Width, target.Height),
-                                 cropRect,
-                                 GraphicsUnit.Pixel);
-            }
-	        return new FastImage(target);
-	    }
 
 	    public static string GetSha(byte[] array)
 	    {

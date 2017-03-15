@@ -132,9 +132,9 @@ namespace WordCloudSharp
 	    public bool GetRandomUnoccupiedPosition(int strSizeX, int strSizeY, out Point p)
 	    {
             var posList = new List<Point>();
-            for (var i = 0; i < this.OutputImgWidth - strSizeX; i++)
+            for (var i = 1; i < this.OutputImgWidth - strSizeX; i++)
 	        {
-	            for (var j = 0; j < this.OutputImgHeight - strSizeY; j++)
+	            for (var j = 1; j < this.OutputImgHeight - strSizeY; j++)
 	            {
 	                if (GetArea(i, j, strSizeX, strSizeY) == 0)
 	                {

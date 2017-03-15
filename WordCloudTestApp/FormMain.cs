@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using WordCloudSharp;
 
 namespace WordCloudTestApp
@@ -22,58 +24,64 @@ namespace WordCloudTestApp
         public FormMain()
 		{
 			InitializeComponent();
-            var lines = File.ReadLines("../../content/counts.csv").ToArray().Take(50);
+            var lines = File.ReadLines("../../content/st.csv").ToArray();
 		    this.Words = new List<string>(lines.Count());
 		    this.Frequencies = new List<int>(lines.Count());
 			foreach (var line in lines)
 			{
 				var textValue = line.Split(new char[] {','});
 			    this.Words.Add(textValue[0]);
-			    this.Frequencies.Add(int.Parse(textValue[1]));
+			    this.Frequencies.Add((int) (double.Parse(textValue[1]) * 1000));
 			}
+            this.Opacity = 0.1;
+            this.Size = new Size(500, 250);
 #if DEBUG
             var buttonContinueDraw = new Button();
             buttonContinueDraw.AutoSize = true;
-            buttonContinueDraw.Location = new Point(187, 5);
-            buttonContinueDraw.Name = "buttonContinueDraw";
-            buttonContinueDraw.Size = new Size(97, 23);
+            buttonContinueDraw.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             buttonContinueDraw.TabIndex = 1;
-            buttonContinueDraw.Text = "ContinueDraw";
-            buttonContinueDraw.UseVisualStyleBackColor = true;
+            buttonContinueDraw.Name = "buttonContinueDraw";
+            buttonContinueDraw.Text = @"ContinueDraw";
             buttonContinueDraw.Click += new EventHandler(buttonContinueDraw_Click);
-            buttonContinueDraw.Enabled = true;
-            buttonContinueDraw.Visible = true;
-            buttonContinueDraw.TabIndex = 0;
-            this.Controls.Add(buttonContinueDraw);
-            buttonContinueDraw.BringToFront();
 
             var checkBoxStepDraw = new CheckBox();
             checkBoxStepDraw.AutoSize = true;
-            checkBoxStepDraw.Location = new Point(400, 9);
-            checkBoxStepDraw.Name = "checkBoxStepDraw";
-            checkBoxStepDraw.Size = new Size(73, 17);
             checkBoxStepDraw.TabIndex = 1;
-            checkBoxStepDraw.Text = "StepDraw";
-            checkBoxStepDraw.UseVisualStyleBackColor = true;
+            checkBoxStepDraw.Name = "checkBoxStepDraw";
+            checkBoxStepDraw.Text = @"StepDraw";
             checkBoxStepDraw.CheckedChanged += new EventHandler(checkBoxStepDraw_CheckedChanged);
-            checkBoxStepDraw.Visible = true;
-            checkBoxStepDraw.Enabled = true;
-            checkBoxStepDraw.Anchor = AnchorStyles.Right | AnchorStyles.Top;
-            this.Controls.Add(checkBoxStepDraw);
-            checkBoxStepDraw.BringToFront();
 #endif
+
+            var buttonSave = new Button();
+            buttonSave.AutoSize = true;
+            buttonSave.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            buttonSave.Text = @"Save";
+            buttonSave.Name = "buttonSave";
+            buttonSave.Click += (sender, e) =>
+            {
+                if (this.pictureBoxResult.Image == null)
+                    return;
+                this.pictureBoxResult.Image.Save(DateTime.Now.ToString("yyyyMMdd_hhmmss_") + "output.jpg", ImageFormat.Jpeg);
+            };
+            
+            this.flowLayoutPanelButtons.Controls.AddRange(new Control[]
+            {
+                buttonSave,
+#if DEBUG
+                buttonContinueDraw,
+                checkBoxStepDraw,
+#endif
+            });
         }
-        #endregion
+#endregion
 
         private void DrawWordcloud(int width, int height, Image mask )
         {
-            this.wc = new WordCloud(width, height, mask: mask)
-            {
-                 StepDrawMode = (this.Controls["checkBoxStepDraw"] as CheckBox).Checked,
-            };
+            this.wc = new WordCloud(width, height, mask: mask, allowVerical: true, fontname: "YouYuan");
 	        this.wc.OnProgress += Wc_OnProgress;
 #if DEBUG
-	        this.wc.OnStepDrawResultImg += ShowResultImage;
+            this.wc.StepDrawMode = (this.flowLayoutPanelButtons.Controls["checkBoxStepDraw"] as CheckBox).Checked;
+            this.wc.OnStepDrawResultImg += ShowResultImage;
             this.wc.OnStepDrawIntegralImg += ShowIntegralImage;
 #endif
             var i = this.wc.Draw(this.Words, this.Frequencies);
@@ -96,9 +104,9 @@ namespace WordCloudTestApp
             Task.Factory.StartNew(() =>
             {
                 ControlsEnable(false);
-                using (var img = Image.FromFile("../../content/stormtrooper_mask.png"))
+                using (var img = Image.FromFile("../../content/st.png"))
                 {
-                    DrawWordcloud(img.Width, img.Height, img);
+                    DrawWordcloud(img.Width * 2, img.Height * 2, img);
                 }
                 ControlsEnable(true);
             });
@@ -107,30 +115,31 @@ namespace WordCloudTestApp
         private void Wc_OnProgress(double progress)
         {
             if (this.progressBarDraw.InvokeRequired)
-                this.progressBarDraw.Invoke(new Action<double>((p) =>
-                {
-                    this.progressBarDraw.Value = Math.Min((int)(p * 100), this.progressBarDraw.Maximum);
-                }), progress);
+                this.progressBarDraw.Invoke(new Action<double>(Wc_OnProgress), progress);
             else
+            {
                 this.progressBarDraw.Value = Math.Min((int)(progress * 100), this.progressBarDraw.Maximum);
+                TaskbarManager.Instance.SetProgressValue((int) (progress*100), this.progressBarDraw.Maximum);
+            }
         }
 
 	    private void ControlsEnable(bool enable)
 	    {
-            if (this.panelControls.InvokeRequired)
-                this.panelControls.Invoke(new Action<bool>((e) => this.panelControls.Enabled = e), enable);
+            if (this.panelButtons.InvokeRequired)
+                this.panelButtons.Invoke(new Action<bool>((e) => this.panelButtons.Enabled = e), enable);
             else
-                this.panelControls.Enabled = enable;
+                this.panelButtons.Enabled = enable;
 	    }
 
         private void ShowResultImage(Image img)
         {
-            if (this.resultPictureBox.InvokeRequired)
-                this.resultPictureBox.Invoke(new Action<Image>((i) => this.resultPictureBox.Image = i), img);
+            if (this.pictureBoxResult.InvokeRequired)
+                this.pictureBoxResult.Invoke(new Action<Image>((i) => this.pictureBoxResult.Image = i), img);
             else
-                this.resultPictureBox.Image = img;
+                this.pictureBoxResult.Image = img;
         }
 
+#if DEBUG
         private void ShowIntegralImage(Image img)
         {
             if (this.pictureBoxIntegralImg.InvokeRequired)
@@ -150,6 +159,13 @@ namespace WordCloudTestApp
         {
             if(this.wc != null)
                 this.wc.StepDrawMode = (sender as CheckBox).Checked;
+        }
+#endif
+
+        private void FormMain_Shown(object sender, EventArgs e)
+        {
+            TaskbarManager.Instance.TabbedThumbnail.SetThumbnailClip(this.Handle, new Rectangle(0, 0, 0, 0));
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
         }
     }
 }
