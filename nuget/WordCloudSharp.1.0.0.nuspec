@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>WordCloudSharp</id>
+    <version>1.0.0</version>
+    <title>WordCloudSharp</title>
+    <authors>AmmRage</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/AmmRage/WordCloudSharp/tree/master/license</licenseUrl>
+    <projectUrl>https://github.com/AmmRage/WordCloudSharp</projectUrl>
+    <description>Tool to generate word cloud images from a list of words and frequencies.
+
+Based off the algorithm in https://github.com/amueller/word_cloud</description>
+    <summary>Tool to generate word cloud images from a list of words and frequencies.</summary>
+    <releaseNotes>This project is ported from a Codeplex hosted repository.
+Add interface generating word cloud with mask.</releaseNotes>
+    <tags>Word Cloud</tags>
+  </metadata>
+  <files>
+    <file src="lib\net45\WordCloudSharp.dll" target="lib\net45\WordCloudSharp.dll" />
+  </files>
+</package>
