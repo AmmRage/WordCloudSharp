@@ -9,5 +9,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: set msbuild
+      run: SET PATH=%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\
     - name: build sln
       run: msbuild.exe WordCloudSharp.sln
