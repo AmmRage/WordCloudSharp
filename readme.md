@@ -6,7 +6,11 @@ This project is ported from a Codeplex hosted repository.
 
 * [orig author](http://www.codeplex.com/site/users/view/briancullen)
 
-# install
+# Build
+
+![GitHub Actions](https://github.com/AmmRage/WordCloudSharp/workflows/CI/badge.svg)
+
+# Install
 
 [![NuGet](https://img.shields.io/nuget/v/WordCloudSharp.svg)](https://www.nuget.org/packages/WordCloudSharp)
 
