@@ -51,9 +51,10 @@
             // 
             this.pictureBoxResult.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBoxResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBoxResult.Location = new System.Drawing.Point(3, 3);
+            this.pictureBoxResult.Location = new System.Drawing.Point(4, 4);
+            this.pictureBoxResult.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBoxResult.Name = "pictureBoxResult";
-            this.pictureBoxResult.Size = new System.Drawing.Size(440, 532);
+            this.pictureBoxResult.Size = new System.Drawing.Size(587, 655);
             this.pictureBoxResult.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxResult.TabIndex = 0;
             this.pictureBoxResult.TabStop = false;
@@ -62,9 +63,10 @@
             // 
             this.buttonDraw.AutoSize = true;
             this.buttonDraw.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buttonDraw.Location = new System.Drawing.Point(3, 3);
+            this.buttonDraw.Location = new System.Drawing.Point(4, 4);
+            this.buttonDraw.Margin = new System.Windows.Forms.Padding(4);
             this.buttonDraw.Name = "buttonDraw";
-            this.buttonDraw.Size = new System.Drawing.Size(42, 23);
+            this.buttonDraw.Size = new System.Drawing.Size(50, 27);
             this.buttonDraw.TabIndex = 0;
             this.buttonDraw.Text = "Draw";
             this.buttonDraw.UseVisualStyleBackColor = true;
@@ -74,9 +76,10 @@
             // 
             this.buttonDrawWithMask.AutoSize = true;
             this.buttonDrawWithMask.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buttonDrawWithMask.Location = new System.Drawing.Point(51, 3);
+            this.buttonDrawWithMask.Location = new System.Drawing.Point(62, 4);
+            this.buttonDrawWithMask.Margin = new System.Windows.Forms.Padding(4);
             this.buttonDrawWithMask.Name = "buttonDrawWithMask";
-            this.buttonDrawWithMask.Size = new System.Drawing.Size(90, 23);
+            this.buttonDrawWithMask.Size = new System.Drawing.Size(111, 27);
             this.buttonDrawWithMask.TabIndex = 0;
             this.buttonDrawWithMask.Text = "DrawWithMask";
             this.buttonDrawWithMask.UseVisualStyleBackColor = true;
@@ -89,8 +92,9 @@
             this.panelButtons.Controls.Add(this.flowLayoutPanelButtons);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelButtons.Location = new System.Drawing.Point(0, 0);
+            this.panelButtons.Margin = new System.Windows.Forms.Padding(4);
             this.panelButtons.Name = "panelButtons";
-            this.panelButtons.Size = new System.Drawing.Size(893, 29);
+            this.panelButtons.Size = new System.Drawing.Size(1191, 35);
             this.panelButtons.TabIndex = 3;
             // 
             // flowLayoutPanelButtons
@@ -101,17 +105,19 @@
             this.flowLayoutPanelButtons.Controls.Add(this.buttonDrawWithMask);
             this.flowLayoutPanelButtons.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanelButtons.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanelButtons.Margin = new System.Windows.Forms.Padding(4);
             this.flowLayoutPanelButtons.Name = "flowLayoutPanelButtons";
-            this.flowLayoutPanelButtons.Size = new System.Drawing.Size(893, 29);
+            this.flowLayoutPanelButtons.Size = new System.Drawing.Size(1191, 35);
             this.flowLayoutPanelButtons.TabIndex = 1;
             // 
             // progressBarDraw
             // 
             this.progressBarDraw.Dock = System.Windows.Forms.DockStyle.Fill;
             this.progressBarDraw.Location = new System.Drawing.Point(0, 0);
-            this.progressBarDraw.MinimumSize = new System.Drawing.Size(0, 10);
+            this.progressBarDraw.Margin = new System.Windows.Forms.Padding(4);
+            this.progressBarDraw.MinimumSize = new System.Drawing.Size(0, 12);
             this.progressBarDraw.Name = "progressBarDraw";
-            this.progressBarDraw.Size = new System.Drawing.Size(893, 10);
+            this.progressBarDraw.Size = new System.Drawing.Size(1191, 12);
             this.progressBarDraw.TabIndex = 4;
             // 
             // panelPicbox
@@ -119,9 +125,10 @@
             this.panelPicbox.AutoSize = true;
             this.panelPicbox.Controls.Add(this.tableLayoutPanelMain);
             this.panelPicbox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelPicbox.Location = new System.Drawing.Point(0, 29);
+            this.panelPicbox.Location = new System.Drawing.Point(0, 35);
+            this.panelPicbox.Margin = new System.Windows.Forms.Padding(4);
             this.panelPicbox.Name = "panelPicbox";
-            this.panelPicbox.Size = new System.Drawing.Size(893, 538);
+            this.panelPicbox.Size = new System.Drawing.Size(1191, 663);
             this.panelPicbox.TabIndex = 5;
             // 
             // tableLayoutPanelMain
@@ -133,19 +140,21 @@
             this.tableLayoutPanelMain.Controls.Add(this.pictureBoxIntegralImg, 1, 0);
             this.tableLayoutPanelMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelMain.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanelMain.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanelMain.Name = "tableLayoutPanelMain";
             this.tableLayoutPanelMain.RowCount = 1;
             this.tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelMain.Size = new System.Drawing.Size(893, 538);
+            this.tableLayoutPanelMain.Size = new System.Drawing.Size(1191, 663);
             this.tableLayoutPanelMain.TabIndex = 1;
             // 
             // pictureBoxIntegralImg
             // 
             this.pictureBoxIntegralImg.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBoxIntegralImg.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBoxIntegralImg.Location = new System.Drawing.Point(449, 3);
+            this.pictureBoxIntegralImg.Location = new System.Drawing.Point(599, 4);
+            this.pictureBoxIntegralImg.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBoxIntegralImg.Name = "pictureBoxIntegralImg";
-            this.pictureBoxIntegralImg.Size = new System.Drawing.Size(441, 532);
+            this.pictureBoxIntegralImg.Size = new System.Drawing.Size(588, 655);
             this.pictureBoxIntegralImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxIntegralImg.TabIndex = 0;
             this.pictureBoxIntegralImg.TabStop = false;
@@ -154,22 +163,24 @@
             // 
             this.panelProgress.Controls.Add(this.progressBarDraw);
             this.panelProgress.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelProgress.Location = new System.Drawing.Point(0, 557);
+            this.panelProgress.Location = new System.Drawing.Point(0, 686);
+            this.panelProgress.Margin = new System.Windows.Forms.Padding(4);
             this.panelProgress.Name = "panelProgress";
-            this.panelProgress.Size = new System.Drawing.Size(893, 10);
+            this.panelProgress.Size = new System.Drawing.Size(1191, 12);
             this.panelProgress.TabIndex = 6;
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(893, 567);
+            this.ClientSize = new System.Drawing.Size(1191, 698);
             this.Controls.Add(this.panelProgress);
             this.Controls.Add(this.panelPicbox);
             this.Controls.Add(this.panelButtons);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "WordCloudTestApp";
+            this.Text = "WordCloudSharpWinDemo";
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxResult)).EndInit();
             this.panelButtons.ResumeLayout(false);

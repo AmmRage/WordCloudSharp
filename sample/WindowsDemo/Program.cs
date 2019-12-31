@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using WordCloudTestApp;
 
-namespace WordCloudTestApp
+namespace WordCloudSharpWinDemo
 {
 	static class Program
 	{
@@ -22,6 +16,5 @@ namespace WordCloudTestApp
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new FormMain());
 		}
-
 	}
 }

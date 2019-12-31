@@ -33,7 +33,7 @@ namespace WordCloudTestApp
 			    this.Words.Add(textValue[0]);
 			    this.Frequencies.Add((int) (double.Parse(textValue[1]) * 1000));
 			}
-            this.Opacity = 0.1;
+            //this.Opacity = 0.1;
             this.Size = new Size(500, 250);
 #if DEBUG
             var buttonContinueDraw = new Button();
@@ -80,7 +80,7 @@ namespace WordCloudTestApp
             this.wc = new WordCloud(width, height, mask: mask, allowVerical: true, fontname: "YouYuan");
 	        this.wc.OnProgress += Wc_OnProgress;
 #if DEBUG
-            this.wc.StepDrawMode = (this.flowLayoutPanelButtons.Controls["checkBoxStepDraw"] as CheckBox).Checked;
+            this.wc.StepDrawMode = ((CheckBox) this.flowLayoutPanelButtons.Controls["checkBoxStepDraw"]).Checked;
             this.wc.OnStepDrawResultImg += ShowResultImage;
             this.wc.OnStepDrawIntegralImg += ShowIntegralImage;
 #endif

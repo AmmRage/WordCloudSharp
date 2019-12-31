@@ -1,11 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCloudSharp", "WordCloud\WordCloudSharp.csproj", "{53F21863-BACB-463C-9A36-0C3A5B7105CA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E10F2BB0-C963-4E55-B2BF-D9ED1638E9EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCloudTestApp", "WordCloudTestApp\WordCloudTestApp.csproj", "{C895CD32-4731-454E-BBEA-652A8AD0ECFC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demos", "demos", "{47099089-4230-4C68-B5DA-2015566D738C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordCloudSharp", "src\WordCloudSharp.csproj", "{66E82033-25CB-4D58-8A4C-962D7B45DFF2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win", "Win", "{5A0DF31C-307B-4CF5-B4DF-6DA6CD262BE5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Macos", "Macos", "{62242016-ABDB-4BA7-AA8E-82F5B9977B0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linux", "Linux", "{02C6CDE1-01E1-4727-94F6-25CDE0358178}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCloudSharpWinDemo", "sample\WindowsDemo\WordCloudSharpWinDemo.csproj", "{C895CD32-4731-454E-BBEA-652A8AD0ECFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +23,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{53F21863-BACB-463C-9A36-0C3A5B7105CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53F21863-BACB-463C-9A36-0C3A5B7105CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53F21863-BACB-463C-9A36-0C3A5B7105CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53F21863-BACB-463C-9A36-0C3A5B7105CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66E82033-25CB-4D58-8A4C-962D7B45DFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66E82033-25CB-4D58-8A4C-962D7B45DFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66E82033-25CB-4D58-8A4C-962D7B45DFF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66E82033-25CB-4D58-8A4C-962D7B45DFF2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C895CD32-4731-454E-BBEA-652A8AD0ECFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C895CD32-4731-454E-BBEA-652A8AD0ECFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C895CD32-4731-454E-BBEA-652A8AD0ECFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -24,6 +34,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{66E82033-25CB-4D58-8A4C-962D7B45DFF2} = {E10F2BB0-C963-4E55-B2BF-D9ED1638E9EA}
+		{5A0DF31C-307B-4CF5-B4DF-6DA6CD262BE5} = {47099089-4230-4C68-B5DA-2015566D738C}
+		{62242016-ABDB-4BA7-AA8E-82F5B9977B0F} = {47099089-4230-4C68-B5DA-2015566D738C}
+		{02C6CDE1-01E1-4727-94F6-25CDE0358178} = {47099089-4230-4C68-B5DA-2015566D738C}
+		{C895CD32-4731-454E-BBEA-652A8AD0ECFC} = {5A0DF31C-307B-4CF5-B4DF-6DA6CD262BE5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB0FDE86-7C67-48E8-A123-7CA6852AE950}
