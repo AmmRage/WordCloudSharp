@@ -3,13 +3,18 @@ name: CI
 on: [push]
 
 jobs:
-  build:
-
-    runs-on: windows-latest
-    
+  build-win:
+    runs-on: windows-latest    
+    name: win-build-sln
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: build sln
-      run: 
-        SET msbuild="C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
-        %msbuild% WordCloudSharp.sln
+    - run: dotnet build
+
+  build-linux:
+    runs-on: ubuntu-latest
+    name: ubuntu-build-sln
+    steps:
+      - uses: actions/checkout@v2
+      - name: build sln
+      - run: dotnet build
