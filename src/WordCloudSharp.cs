@@ -15,6 +15,9 @@ namespace WordCloudSharp
 	/// </summary>
 	public class WordCloud
 	{
+        /// <summary>
+        /// word cloud generating progress event
+        /// </summary>
         public event Action<double> OnProgress;
 #if DEBUG
         public event Action<Image> OnStepDrawResultImg;
@@ -146,12 +149,12 @@ namespace WordCloudSharp
         }
 
         /// <summary>
-        /// Draws the specified word cloud given list of words and frequecies
+        /// Draws the specified word cloud given list of words and frequencies
         /// </summary>
-        /// <param name="words">List of words ordered by occurance.</param>
-        /// <param name="freqs">List of frequecies.</param>
-        /// <param name="bgcolor">Backgroud color of the output image</param>
-        /// <param name="img">Backgroud image of the output image</param>
+        /// <param name="words">List of words ordered by occurrence.</param>
+        /// <param name="freqs">List of frequencies.</param>
+        /// <param name="bgcolor">Background color of the output image</param>
+        /// <param name="img">Background image of the output image</param>
         /// <returns>Image of word cloud.</returns>
         /// <exception cref="System.ArgumentException">
         /// Arguments null.
@@ -245,10 +248,10 @@ namespace WordCloudSharp
 		}
 
         /// <summary>
-        /// Draws the specified word cloud with background color spicified given list of words and frequecies
+        /// Draws the specified word cloud with background color specified given list of words and frequencies
         /// </summary>
-        /// <param name="words">List of words ordered by occurance.</param>
-        /// <param name="freqs">List of frequecies.</param>
+        /// <param name="words">List of words ordered by occurrence.</param>
+        /// <param name="freqs">List of frequencies.</param>
         /// <param name="bgcolor">Specified background color</param>
         /// <returns>Image of word cloud.</returns>
         public Image Draw(IList<string> words, IList<int> freqs, Color bgcolor)
@@ -257,10 +260,10 @@ namespace WordCloudSharp
         }
 
         /// <summary>
-        /// Draws the specified word cloud with background spicified given list of words and frequecies
+        /// Draws the specified word cloud with background specified given list of words and frequencies
         /// </summary>
-        /// <param name="words">List of words ordered by occurance.</param>
-        /// <param name="freqs">List of frequecies.</param>
+        /// <param name="words">List of words ordered by occurrence.</param>
+        /// <param name="freqs">List of frequencies.</param>
         /// <param name="img">Specified background image</param>
         /// <returns>Image of word cloud.</returns>
         public Image Draw(IList<string> words, IList<int> freqs, Image img)
@@ -269,10 +272,10 @@ namespace WordCloudSharp
         }
 
         /// <summary>
-        /// Draws the specified word cloud with given list of words and frequecies
+        /// Draws the specified word cloud with given list of words and frequencies
         /// </summary>
-        /// <param name="words">List of words ordered by occurance.</param>
-        /// <param name="freqs">List of frequecies.</param>
+        /// <param name="words">List of words ordered by occurrence.</param>
+        /// <param name="freqs">List of frequencies.</param>
         /// <returns>Image of word cloud.</returns>
         public Image Draw(IList<string> words, IList<int> freqs)
         {

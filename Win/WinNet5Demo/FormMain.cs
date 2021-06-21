@@ -1,38 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using WordCloudSharp;
+using System.IO;
 
-namespace WordCloudTestApp
+
+using WordCloudSharp;
+using Microsoft.WindowsAPICodePack.Taskbar;
+
+namespace WinNet5Demo
 {
-	public partial class FormMain : Form
-	{
+    public partial class FormMain : Form
+    {
         #region attributes & constructor
         private WordCloud wc;
 
         private List<string> Words { get; set; }
 
-	    private List<int> Frequencies { get; set; }
-
+        private List<int> Frequencies { get; set; }
         public FormMain()
-		{
-			InitializeComponent();
-            var lines = File.ReadLines("../../content/st.csv").ToArray();
-		    this.Words = new List<string>(lines.Count());
-		    this.Frequencies = new List<int>(lines.Count());
-			foreach (var line in lines)
-			{
-				var textValue = line.Split(new char[] {','});
-			    this.Words.Add(textValue[0]);
-			    this.Frequencies.Add((int) (double.Parse(textValue[1]) * 1000));
-			}
+        {
+            InitializeComponent();
+            var lines = File.ReadLines("../../../content/st.csv").ToArray();
+            this.Words = new List<string>(lines.Count());
+            this.Frequencies = new List<int>(lines.Count());
+            foreach (var line in lines)
+            {
+                var textValue = line.Split(new char[] { ',' });
+                this.Words.Add(textValue[0]);
+                this.Frequencies.Add((int)(double.Parse(textValue[1]) * 1000));
+            }
             //this.Opacity = 0.1;
             this.Size = new Size(500, 250);
 #if DEBUG
@@ -63,7 +66,7 @@ namespace WordCloudTestApp
                     return;
                 this.pictureBoxResult.Image.Save(DateTime.Now.ToString("yyyyMMdd_hhmmss_") + "output.jpg", ImageFormat.Jpeg);
             };
-            
+
             this.flowLayoutPanelButtons.Controls.AddRange(new Control[]
             {
                 buttonSave,
@@ -73,14 +76,14 @@ namespace WordCloudTestApp
 #endif
             });
         }
-#endregion
+        #endregion
 
-        private void DrawWordcloud(int width, int height, Image mask )
+        private void DrawWordcloud(int width, int height, Image mask)
         {
             this.wc = new WordCloud(width, height, mask: mask, allowVerical: true, fontname: "YouYuan");
-	        this.wc.OnProgress += Wc_OnProgress;
+            this.wc.OnProgress += Wc_OnProgress;
 #if DEBUG
-            this.wc.StepDrawMode = ((CheckBox) this.flowLayoutPanelButtons.Controls["checkBoxStepDraw"]).Checked;
+            this.wc.StepDrawMode = ((CheckBox)this.flowLayoutPanelButtons.Controls["checkBoxStepDraw"]).Checked;
             this.wc.OnStepDrawResultImg += ShowResultImage;
             this.wc.OnStepDrawIntegralImg += ShowIntegralImage;
 #endif
@@ -104,7 +107,7 @@ namespace WordCloudTestApp
             Task.Factory.StartNew(() =>
             {
                 ControlsEnable(false);
-                using (var img = Image.FromFile("../../content/st.png"))
+                using (var img = Image.FromFile("../../../content/st.png"))
                 {
                     DrawWordcloud(img.Width * 2, img.Height * 2, img);
                 }
@@ -119,17 +122,17 @@ namespace WordCloudTestApp
             else
             {
                 this.progressBarDraw.Value = Math.Min((int)(progress * 100), this.progressBarDraw.Maximum);
-                TaskbarManager.Instance.SetProgressValue((int) (progress*100), this.progressBarDraw.Maximum);
+                TaskbarManager.Instance.SetProgressValue((int)(progress * 100), this.progressBarDraw.Maximum);
             }
         }
 
-	    private void ControlsEnable(bool enable)
-	    {
+        private void ControlsEnable(bool enable)
+        {
             if (this.panelButtons.InvokeRequired)
                 this.panelButtons.Invoke(new Action<bool>((e) => this.panelButtons.Enabled = e), enable);
             else
                 this.panelButtons.Enabled = enable;
-	    }
+        }
 
         private void ShowResultImage(Image img)
         {
@@ -157,7 +160,7 @@ namespace WordCloudTestApp
 
         private void checkBoxStepDraw_CheckedChanged(object sender, EventArgs e)
         {
-            if(this.wc != null)
+            if (this.wc != null)
                 this.wc.StepDrawMode = (sender as CheckBox).Checked;
         }
 #endif
@@ -167,5 +170,6 @@ namespace WordCloudTestApp
             TaskbarManager.Instance.TabbedThumbnail.SetThumbnailClip(this.Handle, new Rectangle(0, 0, 0, 0));
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
         }
+
     }
 }

@@ -19,7 +19,7 @@ namespace WordCloudSharp
         }
 
         /// <summary>
-        /// get the first availible postion from occupancy map
+        /// get the first available position from occupancy map
         /// </summary>
         /// <param name="strSizeX"></param>
         /// <param name="strSizeY"></param>
@@ -70,7 +70,7 @@ namespace WordCloudSharp
 		}
 
         /// <summary>
-        /// get the a random postion from all availible positions from occupancy map
+        /// get the a random position from all available positions from occupancy map
         /// </summary>
         /// <param name="strSizeX"></param>
         /// <param name="strSizeY"></param>
