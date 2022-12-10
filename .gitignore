@@ -49,3 +49,6 @@ ipch/
 *.psess
 *.vsp
 *.vspx
+*.clef
+
+UpgradeReport.sarif
