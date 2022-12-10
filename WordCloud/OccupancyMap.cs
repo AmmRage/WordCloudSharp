@@ -154,5 +154,7 @@ namespace WordCloudSharp
                 return true;
             }
         }
+
+
 	}
 }
