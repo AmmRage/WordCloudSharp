@@ -301,7 +301,9 @@ namespace WordCloudSharp
 #endif
         public void Dispose()
         {
+#if DEBUG
             DrawWaitHandle?.Dispose();
+#endif
             WorkImage?.Dispose();
         }
     }
