@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Dynamic;
 using System.Runtime.InteropServices;
 
 namespace WordCloudSharp
