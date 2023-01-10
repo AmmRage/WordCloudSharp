@@ -62,7 +62,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        ref: dotnet_framework
+        fetch-depth: 0
+        
+    - uses: actions/checkout@v3
+      with:
+        ref: my-branch        
 
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
