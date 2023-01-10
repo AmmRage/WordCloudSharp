@@ -13,7 +13,7 @@ namespace WordCloudSharp
 	/// <summary>
 	/// Class to draw word clouds.
 	/// </summary>
-	public class WordCloud
+	public class WordCloud: IDisposable
 	{
         public event Action<double> OnProgress;
 #if DEBUG
@@ -299,5 +299,10 @@ namespace WordCloudSharp
             this.DrawWaitHandle.Set();
 	    }
 #endif
+        public void Dispose()
+        {
+            DrawWaitHandle?.Dispose();
+            WorkImage?.Dispose();
+        }
     }
 }

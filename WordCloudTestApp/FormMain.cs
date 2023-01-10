@@ -24,7 +24,7 @@ namespace WordCloudTestApp
         public FormMain()
 		{
 			InitializeComponent();
-            var lines = File.ReadLines("../../content/st.csv").ToArray();
+            var lines = File.ReadLines("../../../content/st.csv").ToArray();
 		    this.Words = new List<string>(lines.Count());
 		    this.Frequencies = new List<int>(lines.Count());
 			foreach (var line in lines)
@@ -87,6 +87,7 @@ namespace WordCloudTestApp
             var i = this.wc.Draw(this.Words, this.Frequencies);
             Wc_OnProgress(1);
             ShowResultImage(i);
+            this.wc.Dispose();
         }
 
         private void buttonDraw_Click(object sender, EventArgs e)
